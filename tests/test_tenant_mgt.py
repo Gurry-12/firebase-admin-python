@@ -26,7 +26,7 @@ from firebase_admin import exceptions
 from firebase_admin import tenant_mgt
 from firebase_admin import _auth_providers
 from firebase_admin import _user_mgt
-from firebase_admin import multi_factor_config_mgt
+from firebase_admin import multi_factor_config
 from tests import testutils
 from tests import test_token_gen
 
@@ -255,11 +255,11 @@ class TestCreateTenant:
 
     def test_create_tenant(self, tenant_mgt_app):
         _, recorder = _instrument_tenant_mgt(tenant_mgt_app, 200, GET_TENANT_RESPONSE)
-        mfa_object = multi_factor_config_mgt.MultiFactorConfig(
+        mfa_object = multi_factor_config.MultiFactorConfig(
             provider_configs=[
-                multi_factor_config_mgt.ProviderConfig(
-                    state=multi_factor_config_mgt.ProviderConfig.State.ENABLED,
-                    totp_provider_config=multi_factor_config_mgt.TOTPProviderConfig(
+                multi_factor_config.ProviderConfig(
+                    state=multi_factor_config.ProviderConfig.State.ENABLED,
+                    totp_provider_config=multi_factor_config.TOTPProviderConfig(
                         adjacent_intervals=5
                     )
                 )
@@ -374,11 +374,11 @@ class TestUpdateTenant:
 
     def test_update_tenant(self, tenant_mgt_app):
         _, recorder = _instrument_tenant_mgt(tenant_mgt_app, 200, GET_TENANT_RESPONSE)
-        mfa_object = multi_factor_config_mgt.MultiFactorConfig(
+        mfa_object = multi_factor_config.MultiFactorConfig(
             provider_configs=[
-                multi_factor_config_mgt.ProviderConfig(
-                    state=multi_factor_config_mgt.ProviderConfig.State.ENABLED,
-                    totp_provider_config=multi_factor_config_mgt.TOTPProviderConfig(
+                multi_factor_config.ProviderConfig(
+                    state=multi_factor_config.ProviderConfig.State.ENABLED,
+                    totp_provider_config=multi_factor_config.TOTPProviderConfig(
                         adjacent_intervals=5
                     )
                 )
@@ -1063,15 +1063,15 @@ class TestCreateCustomToken:
             custom_token, expected_claims=claims, tenant_id='test-tenant')
 
 def _assert_multi_factor_config(mfa_config):
-    assert isinstance(mfa_config, multi_factor_config_mgt.MultiFactorServerConfig)
+    assert isinstance(mfa_config, multi_factor_config.MultiFactorServerConfig)
     assert len(mfa_config.provider_configs) == 1
     assert isinstance(mfa_config.provider_configs, list)
     for provider_config in mfa_config.provider_configs:
-        assert isinstance(provider_config, multi_factor_config_mgt.MultiFactorServerConfig.\
+        assert isinstance(provider_config, multi_factor_config.MultiFactorServerConfig.\
                           ProviderConfigServerConfig)
         assert provider_config.state == 'ENABLED'
         assert isinstance(provider_config.totp_provider_config,
-                          multi_factor_config_mgt.MultiFactorServerConfig.ProviderConfigServerConfig
+                          multi_factor_config.MultiFactorServerConfig.ProviderConfigServerConfig
                           .TOTPProviderServerConfig)
         assert provider_config.totp_provider_config.adjacent_intervals == 5
 

@@ -22,8 +22,8 @@ import firebase_admin
 from firebase_admin import _auth_utils
 from firebase_admin import _http_client
 from firebase_admin import _utils
-from firebase_admin.multi_factor_config_mgt import MultiFactorConfig
-from firebase_admin.multi_factor_config_mgt import MultiFactorServerConfig
+from firebase_admin.multi_factor_config import MultiFactorConfig
+from firebase_admin.multi_factor_config import MultiFactorServerConfig
 
 _PROJECT_CONFIG_MGT_ATTRIBUTE = '_project_config_mgt'
 

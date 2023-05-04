@@ -15,12 +15,12 @@ from copy import copy
 
 import pytest
 
-from firebase_admin import multi_factor_config_mgt
+from firebase_admin import multi_factor_config
 
-sample_mfa_config = multi_factor_config_mgt.MultiFactorConfig(
-    provider_configs=[multi_factor_config_mgt.ProviderConfig(
-        state=multi_factor_config_mgt.ProviderConfig.State.ENABLED,
-        totp_provider_config=multi_factor_config_mgt.TOTPProviderConfig(
+sample_mfa_config = multi_factor_config.MultiFactorConfig(
+    provider_configs=[multi_factor_config.ProviderConfig(
+        state=multi_factor_config.ProviderConfig.State.ENABLED,
+        totp_provider_config=multi_factor_config.TOTPProviderConfig(
             adjacent_intervals=5
         )
     )]
@@ -78,7 +78,7 @@ class TestProviderConfig:
     @pytest.mark.parametrize('state',
                              ['', 1, True, False, [], (), {}, "foo", 'ENABLED'])
     def test_invalid_provider_config_state(self, state):
-        test_config = multi_factor_config_mgt.ProviderConfig(
+        test_config = multi_factor_config.ProviderConfig(
             state=state
         )
         with pytest.raises(ValueError) as excinfo:
@@ -87,10 +87,10 @@ class TestProviderConfig:
                                              ' ProviderConfig.State.')
 
     @pytest.mark.parametrize('state',
-                             [multi_factor_config_mgt.ProviderConfig.State.ENABLED,
-                              multi_factor_config_mgt.ProviderConfig.State.DISABLED])
+                             [multi_factor_config.ProviderConfig.State.ENABLED,
+                              multi_factor_config.ProviderConfig.State.DISABLED])
     def test_undefined_totp_provider_config(self, state):
-        test_config = multi_factor_config_mgt.ProviderConfig(state=state)
+        test_config = multi_factor_config.ProviderConfig(state=state)
         with pytest.raises(ValueError) as excinfo:
             test_config.build_server_request()
         assert str(excinfo.value).startswith('provider_config.totp_provider_config must be'
@@ -134,21 +134,21 @@ class TestMultiFactorServerConfig:
     def test_invalid_multi_factor_config_response(self):
         test_config = 'invalid'
         with pytest.raises(ValueError) as excinfo:
-            multi_factor_config_mgt.MultiFactorServerConfig(test_config)
+            multi_factor_config.MultiFactorServerConfig(test_config)
         assert str(excinfo.value).startswith('Invalid data argument in MultiFactorConfig'
                                              ' constructor: {0}'.format(test_config))
 
     def test_invalid_provider_config_response(self):
         test_config = 'invalid'
         with pytest.raises(ValueError) as excinfo:
-            multi_factor_config_mgt.MultiFactorServerConfig.ProviderConfigServerConfig(test_config)
+            multi_factor_config.MultiFactorServerConfig.ProviderConfigServerConfig(test_config)
         assert str(excinfo.value).startswith('Invalid data argument in ProviderConfig'
                                              ' constructor: {0}'.format(test_config))
 
     def test_invalid_totp_provider_config_response(self):
         test_config = 'invalid'
         with pytest.raises(ValueError) as excinfo:
-            multi_factor_config_mgt.MultiFactorServerConfig.ProviderConfigServerConfig.\
+            multi_factor_config.MultiFactorServerConfig.ProviderConfigServerConfig.\
                 TOTPProviderServerConfig(test_config)
         assert str(excinfo.value).startswith('Invalid data argument in TOTPProviderConfig'
                                              ' constructor: {0}'.format(test_config))
@@ -162,20 +162,20 @@ class TestMultiFactorServerConfig:
                 }
             }]
         }
-        mfa_config = multi_factor_config_mgt.MultiFactorServerConfig(response)
+        mfa_config = multi_factor_config.MultiFactorServerConfig(response)
         _assert_multi_factor_config(mfa_config)
 
 
 def _assert_multi_factor_config(mfa_config):
-    assert isinstance(mfa_config, multi_factor_config_mgt.MultiFactorServerConfig)
+    assert isinstance(mfa_config, multi_factor_config.MultiFactorServerConfig)
     assert len(mfa_config.provider_configs) == 1
     assert isinstance(mfa_config.provider_configs, list)
     for provider_config in mfa_config.provider_configs:
         assert isinstance(
             provider_config,
-            multi_factor_config_mgt.MultiFactorServerConfig.ProviderConfigServerConfig)
+            multi_factor_config.MultiFactorServerConfig.ProviderConfigServerConfig)
         assert provider_config.state == 'ENABLED'
         assert isinstance(provider_config.totp_provider_config,
-                          multi_factor_config_mgt.MultiFactorServerConfig.ProviderConfigServerConfig
+                          multi_factor_config.MultiFactorServerConfig.ProviderConfigServerConfig
                           .TOTPProviderServerConfig)
         assert provider_config.totp_provider_config.adjacent_intervals == 5

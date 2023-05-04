@@ -25,7 +25,7 @@ import pytest
 
 from firebase_admin import auth
 from firebase_admin import tenant_mgt
-from firebase_admin import multi_factor_config
+from firebase_admin import multi_factor_config_mgt
 from integration import test_auth
 
 
@@ -36,10 +36,10 @@ VERIFY_TOKEN_URL = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/v
 
 @pytest.fixture(scope='module')
 def sample_tenant():
-    mfa_object = multi_factor_config.MultiFactorConfig(
-        provider_configs=[multi_factor_config.ProviderConfig(
-            state=multi_factor_config.ProviderConfig.State.ENABLED,
-            totp_provider_config=multi_factor_config.TOTPProviderConfig(
+    mfa_object = multi_factor_config_mgt.MultiFactorConfig(
+        provider_configs=[multi_factor_config_mgt.ProviderConfig(
+            state=multi_factor_config_mgt.ProviderConfig.State.ENABLED,
+            totp_provider_config=multi_factor_config_mgt.TOTPProviderConfig(
                 adjacent_intervals=5
             )
         )]
@@ -53,15 +53,15 @@ def sample_tenant():
     tenant_mgt.delete_tenant(tenant.tenant_id)
 
 def _assert_multi_factor_config(mfa_config):
-    assert isinstance(mfa_config, multi_factor_config.MultiFactorServerConfig)
+    assert isinstance(mfa_config, multi_factor_config_mgt.MultiFactorServerConfig)
     assert len(mfa_config.provider_configs) == 1
     assert isinstance(mfa_config.provider_configs, list)
     for provider_config in mfa_config.provider_configs:
-        assert isinstance(provider_config, multi_factor_config.MultiFactorServerConfig.\
+        assert isinstance(provider_config, multi_factor_config_mgt.MultiFactorServerConfig.\
                           ProviderConfigServerConfig)
         assert provider_config.state == 'ENABLED'
         assert isinstance(provider_config.totp_provider_config,
-                          multi_factor_config.MultiFactorServerConfig.ProviderConfigServerConfig
+                          multi_factor_config_mgt.MultiFactorServerConfig.ProviderConfigServerConfig
                           .TOTPProviderServerConfig)
         assert provider_config.totp_provider_config.adjacent_intervals == 5
 
@@ -99,10 +99,10 @@ def test_list_tenants(sample_tenant):
 
 
 def test_update_tenant():
-    mfa_object = multi_factor_config.MultiFactorConfig(
-        provider_configs=[multi_factor_config.ProviderConfig(
-            state=multi_factor_config.ProviderConfig.State.ENABLED,
-            totp_provider_config=multi_factor_config.TOTPProviderConfig(
+    mfa_object = multi_factor_config_mgt.MultiFactorConfig(
+        provider_configs=[multi_factor_config_mgt.ProviderConfig(
+            state=multi_factor_config_mgt.ProviderConfig.State.ENABLED,
+            totp_provider_config=multi_factor_config_mgt.TOTPProviderConfig(
                 adjacent_intervals=5
             )
         )]

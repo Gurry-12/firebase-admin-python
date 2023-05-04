@@ -17,7 +17,7 @@
 import pytest
 
 from firebase_admin import project_config_mgt
-from firebase_admin import multi_factor_config
+from firebase_admin import multi_factor_config_mgt
 
 
 @pytest.fixture(scope='module')
@@ -36,11 +36,11 @@ def sample_mfa_config():
 
 
 def test_update_project_config():
-    mfa_object = multi_factor_config.MultiFactorConfig(
+    mfa_object = multi_factor_config_mgt.MultiFactorConfig(
         provider_configs=[
-            multi_factor_config.ProviderConfig(
-                state=multi_factor_config.ProviderConfig.State.ENABLED,
-                totp_provider_config=multi_factor_config.TOTPProviderConfig(
+            multi_factor_config_mgt.ProviderConfig(
+                state=multi_factor_config_mgt.ProviderConfig.State.ENABLED,
+                totp_provider_config=multi_factor_config_mgt.TOTPProviderConfig(
                     adjacent_intervals=5
                 )
             )
@@ -56,14 +56,14 @@ def test_get_project():
     _assert_multi_factor_config(project_config.multi_factor_config)
 
 def _assert_multi_factor_config(multi_factor_config):
-    assert isinstance(multi_factor_config, multi_factor_config.MultiFactorServerConfig)
+    assert isinstance(multi_factor_config, multi_factor_config_mgt.MultiFactorServerConfig)
     assert len(multi_factor_config.provider_configs) == 1
     assert isinstance(multi_factor_config.provider_configs, list)
     for provider_config in multi_factor_config.provider_configs:
-        assert isinstance(provider_config, multi_factor_config.MultiFactorServerConfig
+        assert isinstance(provider_config, multi_factor_config_mgt.MultiFactorServerConfig
                           .ProviderConfigServerConfig)
         assert provider_config.state == 'ENABLED'
         assert isinstance(provider_config.totp_provider_config,
-                          multi_factor_config.MultiFactorServerConfig.ProviderConfigServerConfig
+                          multi_factor_config_mgt.MultiFactorServerConfig.ProviderConfigServerConfig
                           .TOTPProviderServerConfig)
         assert provider_config.totp_provider_config.adjacent_intervals == 5

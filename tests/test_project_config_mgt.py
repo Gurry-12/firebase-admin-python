@@ -22,7 +22,7 @@ from tests import testutils
 
 import firebase_admin
 from firebase_admin import project_config_mgt
-from firebase_admin import multi_factor_config
+from firebase_admin import multi_factor_config_mgt
 
 
 GET_PROJECT_RESPONSE = """{
@@ -124,11 +124,11 @@ class TestUpdateProjectConfig:
     def test_update_project_config(self, project_config_mgt_app):
         _, recorder = _instrument_project_config_mgt(
             project_config_mgt_app, 200, GET_PROJECT_RESPONSE)
-        mfa_object = multi_factor_config.MultiFactorConfig(
+        mfa_object = multi_factor_config_mgt.MultiFactorConfig(
             provider_configs=[
-                multi_factor_config.ProviderConfig(
-                    state=multi_factor_config.ProviderConfig.State.ENABLED,
-                    totp_provider_config=multi_factor_config.TOTPProviderConfig(
+                multi_factor_config_mgt.ProviderConfig(
+                    state=multi_factor_config_mgt.ProviderConfig.State.ENABLED,
+                    totp_provider_config=multi_factor_config_mgt.TOTPProviderConfig(
                         adjacent_intervals=5
                     )
                 )
@@ -163,15 +163,15 @@ class TestUpdateProjectConfig:
         assert got == body
 
 def _assert_multi_factor_config(multi_factor_config):
-    assert isinstance(multi_factor_config, multi_factor_config.MultiFactorServerConfig)
+    assert isinstance(multi_factor_config, multi_factor_config_mgt.MultiFactorServerConfig)
     assert len(multi_factor_config.provider_configs) == 1
     assert isinstance(multi_factor_config.provider_configs, list)
     for provider_config in multi_factor_config.provider_configs:
-        assert isinstance(provider_config, multi_factor_config.MultiFactorServerConfig
+        assert isinstance(provider_config, multi_factor_config_mgt.MultiFactorServerConfig
                           .ProviderConfigServerConfig)
         assert provider_config.state == 'ENABLED'
         assert isinstance(provider_config.totp_provider_config,
-                          multi_factor_config.MultiFactorServerConfig.ProviderConfigServerConfig
+                          multi_factor_config_mgt.MultiFactorServerConfig.ProviderConfigServerConfig
                           .TOTPProviderServerConfig)
         assert provider_config.totp_provider_config.adjacent_intervals == 5
 

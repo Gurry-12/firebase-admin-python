@@ -26,6 +26,7 @@ import requests
 import firebase_admin
 from firebase_admin import auth
 from firebase_admin import multi_factor_config_mgt
+from firebase_admin import password_policy_config_mgt
 from firebase_admin import _auth_utils
 from firebase_admin import _http_client
 from firebase_admin import _utils
@@ -93,7 +94,7 @@ def get_tenant(tenant_id, app=None):
 
 def create_tenant(
         display_name, allow_password_sign_up=None, enable_email_link_sign_in=None,
-        multi_factor_config: multi_factor_config_mgt.MultiFactorConfig = None, app=None):
+        multi_factor_config: multi_factor_config_mgt.MultiFactorConfig = None, password_policy_config: password_policy_config_mgt.PasswordPolicyConfig = None, app=None):
     """Creates a new tenant from the given options.
 
     Args:
@@ -104,6 +105,7 @@ def create_tenant(
         enable_email_link_sign_in: A boolean indicating whether to enable or disable email link
             sign-in (optional). Disabling this makes the password required for email sign-in.
         multi_factor_config : A multi factor configuration to add to the tenant (optional).
+        password_policy_config: A password policy configuration to add to the tenant (optional).
         app: An App instance (optional).
 
     Returns:
@@ -117,12 +119,12 @@ def create_tenant(
     return tenant_mgt_service.create_tenant(
         display_name=display_name, allow_password_sign_up=allow_password_sign_up,
         enable_email_link_sign_in=enable_email_link_sign_in,
-        multi_factor_config=multi_factor_config,)
+        multi_factor_config=multi_factor_config,password_policy_config = password_policy_config)
 
 
 def update_tenant(
         tenant_id, display_name=None, allow_password_sign_up=None, enable_email_link_sign_in=None,
-        multi_factor_config: multi_factor_config_mgt.MultiFactorConfig = None, app=None):
+        multi_factor_config: multi_factor_config_mgt.MultiFactorConfig = None, password_policy_config: password_policy_config_mgt.PasswordPolicyConfig = None, app=None):
     """Updates an existing tenant with the given options.
 
     Args:
@@ -133,6 +135,7 @@ def update_tenant(
         enable_email_link_sign_in: A boolean indicating whether to enable or disable email link
             sign-in. Disabling this makes the password required for email sign-in.
         multi_factor_config : A multi factor configuration to update for the tenant (optional).
+        password_policy_config: A password policy configuration to update for the tenant (optional).
         app: An App instance (optional).
 
     Returns:
@@ -147,7 +150,7 @@ def update_tenant(
     return tenant_mgt_service.update_tenant(
         tenant_id, display_name=display_name, allow_password_sign_up=allow_password_sign_up,
         enable_email_link_sign_in=enable_email_link_sign_in,
-        multi_factor_config=multi_factor_config)
+        multi_factor_config=multi_factor_config, password_policy_config=password_policy_config)
 
 
 def delete_tenant(tenant_id, app=None):
@@ -240,7 +243,13 @@ class Tenant:
         if data is not None:
             return multi_factor_config_mgt.MultiFactorServerConfig(data)
         return None
-
+    
+    @property
+    def password_policy_config(self):
+        data = self._data.get('passwordPolicyConfig', None)
+        if data is not None:
+            return password_policy_config_mgt.PasswordPolicyConfig(data)
+        return None
 
 class _TenantManagementService:
     """Firebase tenant management service."""
@@ -286,7 +295,7 @@ class _TenantManagementService:
 
     def create_tenant(
             self, display_name, allow_password_sign_up=None, enable_email_link_sign_in=None,
-            multi_factor_config: multi_factor_config_mgt.MultiFactorConfig = None):
+            multi_factor_config: multi_factor_config_mgt.MultiFactorConfig = None, password_policy_config: password_policy_config_mgt.PasswordPolicyConfig = None):
         """Creates a new tenant from the given parameters."""
 
         payload = {'displayName': _validate_display_name(display_name)}
@@ -301,6 +310,11 @@ class _TenantManagementService:
                 raise ValueError(
                     'multi_factor_config must be of type MultiFactorConfig.')
             payload['mfaConfig'] = multi_factor_config.build_server_request()
+        if password_policy_config is not None:
+            if not isinstance(password_policy_config, password_policy_config_mgt.PasswordPolicyConfig):
+                raise ValueError(
+                    'password_policy_config must be of type PasswordPolicyConfig.')
+            payload['passwordPolicyConfig'] = password_policy_config.build_server_request()
         try:
             body = self.client.body('post', '/tenants', json=payload)
         except requests.exceptions.RequestException as error:
@@ -311,7 +325,8 @@ class _TenantManagementService:
     def update_tenant(
             self, tenant_id, display_name=None, allow_password_sign_up=None,
             enable_email_link_sign_in=None,
-            multi_factor_config: multi_factor_config_mgt.MultiFactorConfig = None):
+            multi_factor_config: multi_factor_config_mgt.MultiFactorConfig = None,
+            password_policy_config: password_policy_config_mgt.PasswordPolicyConfig = None):
         """Updates the specified tenant with the given parameters."""
         if not isinstance(tenant_id, str) or not tenant_id:
             raise ValueError('Tenant ID must be a non-empty string.')
@@ -329,6 +344,11 @@ class _TenantManagementService:
             if not isinstance(multi_factor_config, multi_factor_config_mgt.MultiFactorConfig):
                 raise ValueError('multi_factor_config must be of type MultiFactorConfig.')
             payload['mfaConfig'] = multi_factor_config.build_server_request()
+        if password_policy_config is not None:
+            if not isinstance(password_policy_config, password_policy_config_mgt.PasswordPolicyConfig):
+                raise ValueError(
+                    'password_policy_config must be of type PasswordPolicyConfig.')
+            payload['passwordPolicyConfig'] = password_policy_config.build_server_request()
 
         if not payload:
             raise ValueError('At least one parameter must be specified for update.')

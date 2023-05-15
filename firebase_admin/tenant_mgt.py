@@ -93,8 +93,13 @@ def get_tenant(tenant_id, app=None):
 
 
 def create_tenant(
-        display_name, allow_password_sign_up=None, enable_email_link_sign_in=None,
-        multi_factor_config: multi_factor_config_mgt.MultiFactorConfig = None, password_policy_config: password_policy_config_mgt.PasswordPolicyConfig = None, app=None):
+    display_name,
+    allow_password_sign_up=None,
+    enable_email_link_sign_in=None,
+    multi_factor_config: multi_factor_config_mgt.MultiFactorConfig = None,
+    password_policy_config: password_policy_config_mgt.PasswordPolicyConfig = None,
+    app=None,
+):
     """Creates a new tenant from the given options.
 
     Args:
@@ -117,14 +122,23 @@ def create_tenant(
     """
     tenant_mgt_service = _get_tenant_mgt_service(app)
     return tenant_mgt_service.create_tenant(
-        display_name=display_name, allow_password_sign_up=allow_password_sign_up,
+        display_name=display_name,
+        allow_password_sign_up=allow_password_sign_up,
         enable_email_link_sign_in=enable_email_link_sign_in,
-        multi_factor_config=multi_factor_config,password_policy_config = password_policy_config)
+        multi_factor_config=multi_factor_config,
+        password_policy_config=password_policy_config,
+    )
 
 
 def update_tenant(
-        tenant_id, display_name=None, allow_password_sign_up=None, enable_email_link_sign_in=None,
-        multi_factor_config: multi_factor_config_mgt.MultiFactorConfig = None, password_policy_config: password_policy_config_mgt.PasswordPolicyConfig = None, app=None):
+    tenant_id,
+    display_name=None,
+    allow_password_sign_up=None,
+    enable_email_link_sign_in=None,
+    multi_factor_config: multi_factor_config_mgt.MultiFactorConfig = None,
+    password_policy_config: password_policy_config_mgt.PasswordPolicyConfig = None,
+    app=None,
+):
     """Updates an existing tenant with the given options.
 
     Args:
@@ -148,9 +162,13 @@ def update_tenant(
     """
     tenant_mgt_service = _get_tenant_mgt_service(app)
     return tenant_mgt_service.update_tenant(
-        tenant_id, display_name=display_name, allow_password_sign_up=allow_password_sign_up,
+        tenant_id,
+        display_name=display_name,
+        allow_password_sign_up=allow_password_sign_up,
         enable_email_link_sign_in=enable_email_link_sign_in,
-        multi_factor_config=multi_factor_config, password_policy_config=password_policy_config)
+        multi_factor_config=multi_factor_config,
+        password_policy_config=password_policy_config,
+    )
 
 
 def delete_tenant(tenant_id, app=None):
@@ -294,8 +312,13 @@ class _TenantManagementService:
             return Tenant(body)
 
     def create_tenant(
-            self, display_name, allow_password_sign_up=None, enable_email_link_sign_in=None,
-            multi_factor_config: multi_factor_config_mgt.MultiFactorConfig = None, password_policy_config: password_policy_config_mgt.PasswordPolicyConfig = None):
+        self,
+        display_name,
+        allow_password_sign_up=None,
+        enable_email_link_sign_in=None,
+        multi_factor_config: multi_factor_config_mgt.MultiFactorConfig = None,
+        password_policy_config: password_policy_config_mgt.PasswordPolicyConfig = None,
+    ):
         """Creates a new tenant from the given parameters."""
 
         payload = {'displayName': _validate_display_name(display_name)}
@@ -323,10 +346,14 @@ class _TenantManagementService:
             return Tenant(body)
 
     def update_tenant(
-            self, tenant_id, display_name=None, allow_password_sign_up=None,
-            enable_email_link_sign_in=None,
-            multi_factor_config: multi_factor_config_mgt.MultiFactorConfig = None,
-            password_policy_config: password_policy_config_mgt.PasswordPolicyConfig = None):
+        self,
+        tenant_id,
+        display_name=None,
+        allow_password_sign_up=None,
+        enable_email_link_sign_in=None,
+        multi_factor_config: multi_factor_config_mgt.MultiFactorConfig = None,
+        password_policy_config: password_policy_config_mgt.PasswordPolicyConfig = None,
+    ):
         """Updates the specified tenant with the given parameters."""
         if not isinstance(tenant_id, str) or not tenant_id:
             raise ValueError('Tenant ID must be a non-empty string.')

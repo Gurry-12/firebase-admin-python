@@ -261,7 +261,7 @@ class Tenant:
         if data is not None:
             return multi_factor_config_mgt.MultiFactorServerConfig(data)
         return None
-    
+
     @property
     def password_policy_config(self):
         data = self._data.get('passwordPolicyConfig', None)
@@ -334,7 +334,8 @@ class _TenantManagementService:
                     'multi_factor_config must be of type MultiFactorConfig.')
             payload['mfaConfig'] = multi_factor_config.build_server_request()
         if password_policy_config is not None:
-            if not isinstance(password_policy_config, password_policy_config_mgt.PasswordPolicyConfig):
+            if not isinstance(password_policy_config,
+                              password_policy_config_mgt.PasswordPolicyConfig):
                 raise ValueError(
                     'password_policy_config must be of type PasswordPolicyConfig.')
             payload['passwordPolicyConfig'] = password_policy_config.build_server_request()
@@ -372,7 +373,8 @@ class _TenantManagementService:
                 raise ValueError('multi_factor_config must be of type MultiFactorConfig.')
             payload['mfaConfig'] = multi_factor_config.build_server_request()
         if password_policy_config is not None:
-            if not isinstance(password_policy_config, password_policy_config_mgt.PasswordPolicyConfig):
+            if not isinstance(password_policy_config,
+                              password_policy_config_mgt.PasswordPolicyConfig):
                 raise ValueError(
                     'password_policy_config must be of type PasswordPolicyConfig.')
             payload['passwordPolicyConfig'] = password_policy_config.build_server_request()

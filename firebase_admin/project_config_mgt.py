@@ -121,7 +121,7 @@ class _ProjectConfigManagementService:
         else:
             return ProjectConfig(body)
 
-    def update_project_config(self, multi_factor_config: MultiFactorConfig = None, passwordg_policy_config: PasswordPolicyConfig = None) -> ProjectConfig:
+    def update_project_config(self, multi_factor_config: MultiFactorConfig = None, password_policy_config: PasswordPolicyConfig = None) -> ProjectConfig:
         """Updates the specified project with the given parameters."""
 
         payload = {}
@@ -129,10 +129,10 @@ class _ProjectConfigManagementService:
             if not isinstance(multi_factor_config, MultiFactorConfig):
                 raise ValueError('multi_factor_config must be of type MultiFactorConfig.')
             payload['mfa'] = multi_factor_config.build_server_request()
-        if passwordg_policy_config is not None:
-            if not isinstance(passwordg_policy_config, PasswordPolicyConfig):
+        if password_policy_config is not None:
+            if not isinstance(password_policy_config, PasswordPolicyConfig):
                 raise ValueError('password_policy_config must be of type PasswordPolicyConfig.')
-            payload['passwordPolicyConfig'] = passwordg_policy_config.build_server_request()
+            payload['passwordPolicyConfig'] = password_policy_config.build_server_request()
         if not payload:
             raise ValueError(
                 'At least one parameter must be specified for update.')
